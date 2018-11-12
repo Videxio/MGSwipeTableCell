@@ -108,7 +108,7 @@
                 button.frame = CGRectMake(0, 0, maxSize.width, maxSize.height);
             }
             button.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-            [_container insertSubview:button atIndex: _fromLeft ? 0: _container.subviews.count];
+            [_container insertSubview:button atIndex: _fromLeft ? 0: (NSInteger)_container.subviews.count];
         }
         // Expand last button to make it look good with a notch.
         if (safeInset > 0 && settings.expandLastButtonBySafeAreaInsets && _buttons.count > 0) {
@@ -226,7 +226,7 @@
         return;
     }
     if (!_expandedButton) {
-        _expandedButton = [_buttons objectAtIndex: _fromLeft ? settings.buttonIndex : _buttons.count - settings.buttonIndex - 1];
+        _expandedButton = [_buttons objectAtIndex: (NSUInteger)(_fromLeft ? settings.buttonIndex : (NSInteger)_buttons.count - settings.buttonIndex - 1)];
         CGRect previusRect = _container.frame;
         [self layoutExpansion:offset];
         [self resetButtons];
@@ -338,9 +338,9 @@
 #pragma clang diagnostic pop
     
     if (_cell.delegate && [_cell.delegate respondsToSelector:@selector(swipeTableCell:tappedButtonAtIndex:direction:fromExpansion:)]) {
-        NSInteger index = [_buttons indexOfObject:sender];
+        NSInteger index = (NSInteger)[_buttons indexOfObject:sender];
         if (!_fromLeft) {
-            index = _buttons.count - index - 1; //right buttons are reversed
+            index = (NSInteger)_buttons.count - index - 1; //right buttons are reversed
         }
         autoHide|= [_cell.delegate swipeTableCell:_cell tappedButtonAtIndex:index direction:_fromLeft ? MGSwipeDirectionLeftToRight : MGSwipeDirectionRightToLeft fromExpansion:fromExpansion];
     }
@@ -392,7 +392,7 @@
     UIView* lastButton = [_buttons lastObject];
     for (UIView *button in _buttons) {
         CGRect frame = button.frame;
-        CGFloat dx = roundf(frame.size.width * 0.5 * (1.0 - t)) ;
+        CGFloat dx = (CGFloat)round(frame.size.width * 0.5f * (1.0f - t)) ;
         frame.origin.x = _fromLeft ? (selfWidth - frame.size.width - offsetX) * (1.0 - t) + offsetX + dx : offsetX * t - dx;
         button.frame = frame;
 
@@ -1229,7 +1229,7 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
 
 -(void) animationTick: (CADisplayLink *) timer
 {
-    if (!_animationData.start) {
+    if (_animationData.start == 0) {
         _animationData.start = timer.timestamp;
     }
     CFTimeInterval elapsed = timer.timestamp - _animationData.start;
@@ -1303,7 +1303,7 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
     if (_panRecognizer.state != UIGestureRecognizerStateEnded && _panRecognizer.state != UIGestureRecognizerStatePossible) {
         _panRecognizer.enabled = NO;
         _panRecognizer.enabled = YES;
-        if (self.swipeOffset) {
+        if (self.swipeOffset != 0) {
             [self hideSwipeAnimated:YES];
         }
     }
