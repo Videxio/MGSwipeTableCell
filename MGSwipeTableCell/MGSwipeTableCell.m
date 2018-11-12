@@ -367,7 +367,7 @@
 
 -(void) transitionStatic:(CGFloat) t
 {
-    const CGFloat dx = self.bounds.size.width * (1.0 - t);
+    const CGFloat dx = self.bounds.size.width * (1.0f - t);
     CGFloat offsetX = 0;
     
     UIView* lastButton = [_buttons lastObject];
@@ -393,12 +393,12 @@
     for (UIView *button in _buttons) {
         CGRect frame = button.frame;
         CGFloat dx = (CGFloat)round(frame.size.width * 0.5f * (1.0f - t)) ;
-        frame.origin.x = _fromLeft ? (selfWidth - frame.size.width - offsetX) * (1.0 - t) + offsetX + dx : offsetX * t - dx;
+        frame.origin.x = _fromLeft ? (selfWidth - frame.size.width - offsetX) * (1.0f - t) + offsetX + dx : offsetX * t - dx;
         button.frame = frame;
 
         if (_buttons.count > 1) {
             CAShapeLayer *maskLayer = [CAShapeLayer new];
-            CGRect maskRect = CGRectMake(dx - 0.5, 0, frame.size.width - 2 * dx + 1.5, frame.size.height);
+            CGRect maskRect = CGRectMake(dx - 0.5f, 0, frame.size.width - 2 * dx + 1.5f, frame.size.height);
             CGPathRef path = CGPathCreateWithRect(maskRect, NULL);
             maskLayer.path = path;
             CGPathRelease(path);
@@ -417,7 +417,7 @@
     UIView* lastButton = [_buttons lastObject];
     for (UIView *button in _buttons) {
         CGRect frame = button.frame;
-        frame.origin.x = _fromLeft ? (selfWidth - frame.size.width - offsetX) * (1.0 - t) + offsetX : offsetX * t;
+        frame.origin.x = _fromLeft ? (selfWidth - frame.size.width - offsetX) * (1.0f - t) + offsetX : offsetX * t;
         button.frame = frame;
         offsetX += frame.size.width + (button == lastButton ? 0 : _buttonsDistance);
     }
@@ -426,11 +426,11 @@
 -(void) transition3D:(CGFloat) t
 {
     const CGFloat invert = _fromLeft ? 1.0 : -1.0;
-    const CGFloat angle = M_PI_2 * (1.0 - t) * invert;
+    const CGFloat angle = (CGFloat)M_PI_2 * (1.0f - t) * invert;
     CATransform3D transform = CATransform3DIdentity;
-    transform.m34 = -1.0/400.0f; //perspective 1/z
-    const CGFloat dx = -_container.bounds.size.width * 0.5 * invert;
-    const CGFloat offset = dx * 2 * (1.0 - t);
+    transform.m34 = -1.0f/400.0f; //perspective 1/z
+    const CGFloat dx = -_container.bounds.size.width * 0.5f * invert;
+    const CGFloat offset = dx * 2 * (1.0f - t);
     transform = CATransform3DTranslate(transform, dx - offset, 0, 0);
     transform = CATransform3DRotate(transform, angle, 0.0, 1.0, 0.0);
     transform = CATransform3DTranslate(transform, -dx, 0, 0);
@@ -490,8 +490,8 @@
 {
     if (self = [super init]) {
         self.buttonIndex = -1;
-        self.threshold = 1.3;
-        self.animationDuration = 0.2;
+        self.threshold = 1.3f;
+        self.animationDuration = 0.2f;
         self.triggerAnimation = [[MGSwipeAnimation alloc] init];
     }
     return self;
@@ -542,32 +542,32 @@ static inline CGFloat mgEaseInOutCubic(CGFloat t, CGFloat b, CGFloat c) {
 }
 static inline CGFloat mgEaseOutBounce(CGFloat t, CGFloat b, CGFloat c) {
     if (t < (1/2.75)) {
-        return c*(7.5625*t*t) + b;
+        return c*(7.5625f*t*t) + b;
     } else if (t < (2/2.75)) {
         t-=(1.5/2.75);
-        return c*(7.5625*t*t + .75) + b;
+        return c*(7.5625f*t*t + .75f) + b;
     } else if (t < (2.5/2.75)) {
         t-=(2.25/2.75);
-        return c*(7.5625*t*t + .9375) + b;
+        return c*(7.5625f*t*t + .9375f) + b;
     } else {
         t-=(2.625/2.75);
-        return c*(7.5625*t*t + .984375) + b;
+        return c*(7.5625f*t*t + .984375f) + b;
     }
 };
 static inline CGFloat mgEaseInBounce(CGFloat t, CGFloat b, CGFloat c) {
-    return c - mgEaseOutBounce (1.0 -t, 0, c) + b;
+    return c - mgEaseOutBounce (1.0f -t, 0, c) + b;
 };
 
 static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
-    if (t < 0.5) return mgEaseInBounce (t*2, 0, c) * .5 + b;
-    return mgEaseOutBounce (1.0 - t*2, 0, c) * .5 + c*.5 + b;
+    if (t < 0.5f) return mgEaseInBounce (t*2, 0, c) * .5f + b;
+    return mgEaseOutBounce (1.0f - t*2, 0, c) * .5f + c*.5f + b;
 };
 
 @implementation MGSwipeAnimation
 
 -(instancetype) init {
     if (self = [super init]) {
-        _duration = 0.3;
+        _duration = 0.3f;
         _easingFunction = MGSwipeEasingFunctionCubicOut;
     }
     return self;
@@ -1118,7 +1118,7 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
         CGFloat maxOffset = sign * activeButtons.bounds.size.width;
         _swipeOffset = sign > 0 ? MIN(newOffset, maxOffset) : MAX(newOffset, maxOffset);
     }
-    CGFloat offset = fabs(_swipeOffset);
+    CGFloat offset = (CGFloat)fabs(_swipeOffset);
   
   
     if (!activeButtons || offset == 0) {
@@ -1237,7 +1237,7 @@ static inline CGFloat mgEaseInOutBounce(CGFloat t, CGFloat b, CGFloat c) {
     if (completed) {
         _triggerStateChanges = YES;
     }
-    self.swipeOffset = [_animationData.animation value:elapsed duration:_animationData.duration from:_animationData.from to:_animationData.to];
+    self.swipeOffset = [_animationData.animation value:(CGFloat)elapsed duration:(CGFloat)_animationData.duration from:_animationData.from to:_animationData.to];
     
     //call animation completion and invalidate timer
     if (completed){
