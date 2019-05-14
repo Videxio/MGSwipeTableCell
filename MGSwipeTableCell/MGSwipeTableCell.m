@@ -541,16 +541,16 @@ static inline CGFloat mgEaseInOutCubic(CGFloat t, CGFloat b, CGFloat c) {
     return c/2*(t*t*t + 2) + b;
 }
 static inline CGFloat mgEaseOutBounce(CGFloat t, CGFloat b, CGFloat c) {
-    if (t < (1/2.75)) {
+    if (t < (1.0f/2.75f)) {
         return c*(7.5625f*t*t) + b;
-    } else if (t < (2/2.75)) {
-        t-=(1.5/2.75);
+    } else if (t < (2.0f/2.75f)) {
+        t-=(1.5f/2.75f);
         return c*(7.5625f*t*t + .75f) + b;
-    } else if (t < (2.5/2.75)) {
-        t-=(2.25/2.75);
+    } else if (t < (2.5f/2.75f)) {
+        t-=(2.25f/2.75f);
         return c*(7.5625f*t*t + .9375f) + b;
     } else {
-        t-=(2.625/2.75);
+        t-=(2.625f/2.75f);
         return c*(7.5625f*t*t + .984375f) + b;
     }
 };
